@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import "../Login/Login.css";
 import {
   FormControl,
@@ -14,33 +14,41 @@ import axios from "axios";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Hourglass } from "react-loader-spinner";
+import { AuthContext } from "../../context/Auth";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const [errorMsg, seterrorMsg] = useState(null);
-  const [successMsg, setsuccessMsgMsg] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [successMsg, setSuccessMsg] = useState(null);
   const [loading, setLoading] = useState(false);
+  const authContext = useContext(AuthContext); // Renamed to avoid conflict
+  const navigate = useNavigate();
 
   async function submitLogin(values) {
-    console.log(values);
     setLoading(true);
-    const { data } = await axios
-      .post(
-        "https://e-commerce-project-1-tvev.onrender.com/api/v1/users/login",
-        values
-      )
-      .catch(function (error) {
-        setsuccessMsgMsg(null);
+    try {
+      const { data } = await axios.post("api/v1/users/login", values);
+      if (data.status) {
+        if (data?.data.user.role === "user") {
+          setErrorMsg("You Are Not Admin");
+          setLoading(false);
+        } else {
+          console.log(data.status);
+          localStorage.setItem("token", data.token);
+          setErrorMsg(null);
+          authContext.setToken(data.token);
+          setSuccessMsg("Successfully logged in");
+          setTimeout(() => {
+            navigate("/dashboard");
+          }, 1000);
+        }
+      } else {
         setLoading(false);
-        seterrorMsg(error.response.data.message);
-      });
-    if (data.status) {
-      localStorage.setItem("token", data.token);
-      seterrorMsg(null);
-      setsuccessMsgMsg(" successfully login");
-      setTimeout(() => {}, 1000);
-    } else {
+      }
+    } catch (error) {
+      setSuccessMsg(null);
       setLoading(false);
+      setErrorMsg(error.response?.data?.message || "An error occurred");
     }
   }
 
@@ -169,9 +177,6 @@ export default function Login() {
                       <button
                         type="submit"
                         className="tp-btn w-100 border-0 text-center btnSubmit "
-                        onClick={() => {
-                          console.log("dsa");
-                        }}
                       >
                         {loading ? (
                           <Hourglass
