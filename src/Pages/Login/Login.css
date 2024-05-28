@@ -1,0 +1,77 @@
+/* 
+
+Header Login
+
+*/
+.loginPage {
+  font-family: "Poppins", sans-serif;
+}
+.loginPage .headerLogin {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 380px;
+  background-image: url(../../assets/bgHeader.jpg);
+  background-position: center;
+  background-size: cover;
+}
+
+.loginPage .bgOverlay {
+  background: linear-gradient(to right, #17549db5, #391303b5);
+  opacity: 0.9;
+  height: 100%;
+  width: 100%;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  top: 0;
+}
+.loginPage .shape {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.loginPage .shape > svg {
+  width: 100%;
+  height: auto;
+  fill: #f3f3f9;
+}
+
+/* 
+
+Login Form
+
+*/
+.loginPage .topLoginForm h2 {
+  font-size: 48px;
+  font-weight: 500;
+}
+.loginPage .topLoginForm p {
+  font-size: 16px;
+  font-weight: 300;
+  color: var(--main-color-p);
+}
+.loginPage .card label {
+  display: block;
+  text-align: start;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--main-color-label);
+}
+.loginPage .formField {
+  width: 100%;
+  margin-top: 10px;
+}
+.loginPage .formField .btnSubmit {
+  margin-top: 40px;
+  padding: 15px;
+  background: #1976d2;
+  color: white;
+  font-size: 22px;
+  font-weight: 500;
+}
