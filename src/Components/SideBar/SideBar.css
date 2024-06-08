@@ -1,0 +1,59 @@
+.sideBar {
+  background-color: #fff;
+  box-shadow: 0 0.9375rem 1.875rem 0 rgba(0, 0, 0, 0.02);
+  height: calc(100% - 106px);
+  padding-bottom: 0;
+  padding-top: 0;
+  position: fixed;
+  top: 7.5rem;
+  transition: all 0.2s ease;
+  width: 20.5rem;
+  z-index: 6;
+}
+.sideBar .sideBarContaner {
+  overflow: hidden;
+  overflow-anchor: none;
+  touch-action: auto;
+  height: 100%;
+  position: relative;
+}
+.sideBar .sideBarContaner .sideBarMenuUl {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  padding-top: 0.9375rem;
+}
+.sideBar .sideBarContaner .sideBarMenuUl li {
+  padding: 1.25rem;
+}
+.sideBar .sideBarContaner .sideBarMenuUl li a {
+  text-decoration: none;
+  padding: 20px 32px;
+  color: #96a0af;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.5s;
+}
+.sideBar .sideBarContaner .sideBarMenuUl li .active {
+  color: #083f91;
+}
+
+.sideBar .sideBarContaner .sideBarMenuUl li a > i {
+  border-radius: 0.125rem;
+  display: inline-block;
+  font-size: 1.3rem;
+  height: auto;
+  line-height: 1;
+  margin-right: 1.25rem;
+  position: relative;
+  text-align: center;
+  top: 0;
+  vertical-align: middle;
+  width: auto;
+}
+.sideBar .sideBarContaner .sideBarMenuUl li:hover a > span {
+  color: #e23428;
+  transition: all 0.5s;
+}

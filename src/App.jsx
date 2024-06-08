@@ -6,11 +6,15 @@ import ProtectedRoute from "./Pages/ProtectedRoute/ProtectedRoute";
 import DashBoard from "./Pages/DashBoard/DashBoard";
 import Layout from "./Pages/Layout/Layout";
 import Profile from "./Pages/Profile/Profile";
-
+import Users from "./Pages/Users/Users";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { Toaster } from "react-hot-toast";
+import Admins from "./Pages/Admins/Admins";
+import Guides from "./Pages/Guides/Guides";
 const router = createBrowserRouter([
   { path: "/", element: <Login /> },
   {
-    path: "dashboard",
+    path: "panel",
     element: (
       <ProtectedRoute>
         <Layout />
@@ -22,19 +26,38 @@ const router = createBrowserRouter([
         element: <DashBoard />,
       },
       {
-        path: "profile", // Removed leading slash
+        path: "profile",
+        element: <Profile />,
+      },
+      {
+        path: "users",
+        element: <Users />,
+      },
+      {
+        path: "admins",
+        element: <Admins />,
+      },
+      {
+        path: "guides",
+        element: <Guides />,
+      },
+      {
+        path: "charts",
         element: <Profile />,
       },
     ],
   },
 ]);
-
+let clientQuery = new QueryClient();
 function App() {
   return (
     <div className="App">
-      <AuthProvidor>
-        <RouterProvider router={router} />
-      </AuthProvidor>
+      <QueryClientProvider client={clientQuery}>
+        <AuthProvidor>
+          <RouterProvider router={router} />
+        </AuthProvidor>
+      </QueryClientProvider>
+      <Toaster />
     </div>
   );
 }

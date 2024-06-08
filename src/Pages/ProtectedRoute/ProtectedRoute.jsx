@@ -7,7 +7,7 @@ export default function ProtectedRoute({ children }) {
   const { token } = useContext(AuthContext);
 
   if (token === null && localStorage.getItem("token") === null) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/" />;
   }
   return <>{children}</>;
 }

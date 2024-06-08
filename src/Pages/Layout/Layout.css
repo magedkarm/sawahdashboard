@@ -30,7 +30,61 @@
   padding: 0.125rem 0.5rem 0;
   border-radius: 0.125rem;
 }
+/* 
 
+
+reuse
+
+
+
+*/
+.MuiTablePagination-selectLabel,
+.MuiTablePagination-displayedRows {
+  margin-bottom: 0px;
+}
+
+.pageTitles {
+  background: #fff;
+  border-radius: 0.75rem;
+  margin: 0 0 1.875rem;
+  padding: 0.9375rem 2.5rem;
+  text-align: center;
+}
+.pageTitles h3 {
+  font-size: 24px;
+  font-weight: 600;
+}
+.card {
+  background-color: #fff;
+  border: 0 solid transparent !important;
+  border-radius: 0.75rem;
+  box-shadow: 0 0.3125rem 0.3125rem 0 rgba(82, 63, 105, 0.05);
+  height: calc(100% - 30px);
+  margin-bottom: 1.875rem;
+  position: relative;
+  transition: all 0.5s ease-in-out;
+  word-wrap: break-word;
+  background-clip: initial;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.card-header {
+  align-items: center;
+  background: transparent;
+  border-color: #ccc7c7;
+  display: flex;
+  justify-content: space-between;
+  padding: 1.5rem 1.875rem 1.25rem;
+  position: relative;
+}
+.card-title {
+  color: #000;
+  font-size: 1.25rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
 /* 
 
 Header
@@ -83,4 +137,40 @@ Header
 }
 .nav-item::marker {
   display: none !important;
+}
+/* 
+
+content-body
+*/
+.content-body {
+  min-height: 1395px;
+  margin-left: 20.563rem;
+  transition: all 0.2s ease;
+  padding-top: 7.5rem;
+}
+
+/* 
+footer
+
+*/
+.footer {
+  padding-left: 17.1875rem;
+
+  font-size: 0.875rem;
+}
+.footer .copyright {
+  padding: 0.9375rem;
+  color: #9fa4a6;
+  margin-bottom: 2.875rem;
+  margin-top: 1.875rem;
+}
+.footer .copyright p {
+  color: #000;
+  margin: 0;
+  text-align: center;
+}
+.footer .copyright a {
+  color: #e23428;
+  text-decoration: none;
+  padding: 0 2px;
 }

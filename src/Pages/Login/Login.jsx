@@ -39,7 +39,7 @@ export default function Login() {
           authContext.setToken(data.token);
           setSuccessMsg("Successfully logged in");
           setTimeout(() => {
-            navigate("/dashboard");
+            navigate("/panel");
           }, 1000);
         }
       } else {
