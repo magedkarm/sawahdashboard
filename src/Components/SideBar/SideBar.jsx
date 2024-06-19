@@ -35,14 +35,20 @@ export default function SideBar() {
               </li>
               <li>
                 <NavLink to="/panel/admins">
-                  <i class="fa-solid fa-key"></i>
+                  <i className="fa-solid fa-key"></i>
                   <span className="nav-text">Admins</span>
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/panel/guides">
-                  <i class="fa-solid fa-hand"></i>
+                  <i className="fa-solid fa-hand"></i>
                   <span className="nav-text">Guides</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/panel/category">
+                  <i className="fa-solid fa-layer-group"></i>
+                  <span className="nav-text">Category</span>
                 </NavLink>
               </li>
             </ul>

@@ -11,6 +11,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { Toaster } from "react-hot-toast";
 import Admins from "./Pages/Admins/Admins";
 import Guides from "./Pages/Guides/Guides";
+import Category from "./Pages/Category/Category";
 const router = createBrowserRouter([
   { path: "/", element: <Login /> },
   {
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
       {
         path: "guides",
         element: <Guides />,
+      },
+      {
+        path: "category",
+        element: <Category />,
       },
       {
         path: "charts",
