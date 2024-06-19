@@ -21,3 +21,19 @@ code {
 }
 .css-8u39c-MuiTypography-root{font-family: "Poppins", sans-serif !important;}
 .css-10hburv-MuiTypography-root {font-family: "Poppins", sans-serif !important;}
+
+.toast-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.toast-container .Toastify__toast {
+  margin-top: 1rem; /* Adjust as needed */
+  pointer-events: all;
+}

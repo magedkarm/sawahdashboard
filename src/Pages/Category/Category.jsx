@@ -11,6 +11,12 @@ import {
   Paper,
   Button,
   TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  TablePagination,
 } from "@mui/material";
 import { styled, css } from "@mui/system";
 import PropTypes from "prop-types";
@@ -22,7 +28,13 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function Category() {
   const [open, setOpen] = useState(false);
+  const [updateOpen, setUpdateOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [imageUpdatePreview, setImageUpdatePreview] = useState(null);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const queryClient = useQueryClient();
 
   const handleOpen = () => setOpen(true);
@@ -31,8 +43,26 @@ export default function Category() {
     setImagePreview(null);
   };
 
+  const handleUpdateOpen = (category) => {
+    setSelectedCategory(category);
+    setUpdateOpen(true);
+  };
+  const handleUpdateClose = () => {
+    setUpdateOpen(false);
+    setSelectedCategory(null);
+  };
+
+  const handleDeleteOpen = (category) => {
+    setSelectedCategory(category);
+    setDeleteOpen(true);
+  };
+  const handleDeleteClose = () => {
+    setDeleteOpen(false);
+    setSelectedCategory(null);
+  };
+
   const getAllCategories = async () => {
-    const response = await axios.get("http://localhost:8000/api/v1/categories");
+    const response = await axios.get("api/v1/categories");
     return response.data;
   };
 
@@ -41,13 +71,36 @@ export default function Category() {
     getAllCategories
   );
 
+  const deleteMutation = useMutation(
+    (categoryId) =>
+      axios.delete(`api/v1/categories/${categoryId}`, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      }),
+    {
+      onSuccess: () => {
+        toast.success("Category deleted successfully!", {
+          position: "top-center",
+        });
+        queryClient.invalidateQueries("allCategories");
+        handleDeleteClose();
+      },
+      onError: (error) => {
+        toast.error(`Error: ${error.response.data.message}`, {
+          position: "top-center",
+        });
+      },
+    }
+  );
+
   const mutation = useMutation(
     (newCategory) => {
       const formData = new FormData();
       formData.append("name", newCategory.name);
       formData.append("imageCover", newCategory.imageCover);
 
-      return axios.post("http://localhost:8000/api/v1/categories", formData, {
+      return axios.post("api/v1/categories", formData, {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("token"),
           "Content-Type": "multipart/form-data",
@@ -56,15 +109,62 @@ export default function Category() {
     },
     {
       onSuccess: () => {
-        toast.success("Category added successfully!");
+        toast.success("Category added successfully!", {
+          position: "top-center",
+        });
         queryClient.invalidateQueries("allCategories");
         handleClose();
       },
       onError: (error) => {
-        toast.error(`Error: ${error.response.data.message}`);
+        toast.error(`Error: ${error.response.data.message}`, {
+          position: "top-center",
+        });
       },
     }
   );
+
+  const updateMutation = useMutation(
+    ({ id, updatedCategory }) => {
+      const formData = new FormData();
+      formData.append("name", updatedCategory.name);
+      formData.append("imageCover", updatedCategory.imageCover);
+
+      return axios.patch(`api/v1/categories/${id}`, formData, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+          "Content-Type": "multipart/form-data",
+        },
+      });
+    },
+    {
+      onSuccess: () => {
+        toast.success("Category updated successfully!", {
+          position: "top-center",
+        });
+        queryClient.invalidateQueries("allCategories");
+        handleUpdateClose();
+        setImageUpdatePreview(null);
+      },
+      onError: (error) => {
+        toast.error(`Error: ${error.response.data.message}`, {
+          position: "top-center",
+        });
+      },
+    }
+  );
+  const updateFormik = useFormik({
+    initialValues: {
+      name: selectedCategory?.name || "",
+      imageCover: imageUpdatePreview,
+    },
+    enableReinitialize: true,
+    onSubmit: (values) => {
+      updateMutation.mutate({
+        id: selectedCategory._id,
+        updatedCategory: values,
+      });
+    },
+  });
 
   const formik = useFormik({
     initialValues: {
@@ -81,6 +181,44 @@ export default function Category() {
     formik.setFieldValue("imageCover", file);
     setImagePreview(URL.createObjectURL(file));
   };
+
+  const handleUpdateFileChange = (event) => {
+    const file = event.currentTarget.files[0];
+    updateFormik.setFieldValue("imageCover", file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+  async function getcategotyDetails(id) {
+    try {
+      const { data: categoryDetails } = await axios.get(
+        `api/v1/categories/${id}`,
+        {}
+      );
+      setImageUpdatePreview(categoryDetails?.data.doc.imageCover);
+      setImagePreview(
+        `http://localhost:8000/img/categories/${categoryDetails?.data.doc.imageCover}`
+      );
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const emptyRows =
+    page > 0
+      ? Math.max(0, (1 + page) * rowsPerPage - data.data.docs.length)
+      : 0;
+
+  const visibleRows = data
+    ? data.data.docs.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+    : [];
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>An error occurred: {error.message}</div>;
@@ -106,7 +244,7 @@ export default function Category() {
             <div className="card-header">
               <h4 className="card-title">All Categories</h4>
               <Button variant="contained" color="primary" onClick={handleOpen}>
-                Add Category <i className="fa-solid fa-plus"></i>
+                Add Category <i className="ps-3 fa-solid fa-plus"></i>
               </Button>
             </div>
             <div className="card-body">
@@ -117,10 +255,11 @@ export default function Category() {
                       <TableCell align="left">Index</TableCell>
                       <TableCell align="center">Name</TableCell>
                       <TableCell align="center">Image</TableCell>
+                      <TableCell align="center">Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {data.data.docs.map((row, ind) => (
+                    {visibleRows.map((row, ind) => (
                       <TableRow
                         key={row._id}
                         sx={{
@@ -139,16 +278,51 @@ export default function Category() {
                             height="100"
                           />
                         </TableCell>
+                        <TableCell align="center">
+                          <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={() => {
+                              getcategotyDetails(row._id);
+                              handleUpdateOpen(row);
+                              console.log(imagePreview);
+                            }}
+                            style={{ marginRight: "8px" }}
+                          >
+                            Update
+                          </Button>
+                          <Button
+                            variant="contained"
+                            color="error"
+                            onClick={() => handleDeleteOpen(row)}
+                          >
+                            Delete
+                          </Button>
+                        </TableCell>
                       </TableRow>
                     ))}
+                    {emptyRows > 0 && (
+                      <TableRow style={{ height: 53 * emptyRows }}>
+                        <TableCell colSpan={6} />
+                      </TableRow>
+                    )}
                   </TableBody>
                 </Table>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25]}
+                  component="div"
+                  count={data.data.docs.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
               </TableContainer>
             </div>
           </div>
         </div>
       </div>
-      {/* Modal */}
+      {/* Add Category Modal */}
       <Modal
         aria-labelledby="unstyled-modal-title"
         aria-describedby="unstyled-modal-description"
@@ -209,6 +383,98 @@ export default function Category() {
           </form>
         </ModalContent>
       </Modal>
+
+      {/* Update Category Modal */}
+      <Modal
+        aria-labelledby="unstyled-modal-title"
+        aria-describedby="unstyled-modal-description"
+        open={updateOpen}
+        onClose={handleUpdateClose}
+        slots={{ backdrop: StyledBackdrop }}
+      >
+        <ModalContent sx={{ width: 400 }}>
+          <h2 id="unstyled-modal-title" className="modal-title text-center">
+            Update Category
+          </h2>
+          <form className="mt-5" onSubmit={updateFormik.handleSubmit}>
+            <TextField
+              style={{ width: "100%" }}
+              className="formField"
+              id="name"
+              name="name"
+              onBlur={updateFormik.handleBlur}
+              onChange={updateFormik.handleChange}
+              value={updateFormik.values.name}
+              label="Name"
+              error={
+                updateFormik.touched.name && Boolean(updateFormik.errors.name)
+              }
+            />
+            {updateFormik.touched.name && updateFormik.errors.name && (
+              <div className="error">{updateFormik.errors.name}</div>
+            )}
+            <input
+              accept="image/*"
+              style={{ display: "none" }}
+              id="updateImageCover"
+              name="imageCover"
+              type="file"
+              onChange={handleUpdateFileChange}
+            />
+            <label htmlFor="updateImageCover">
+              <Button
+                variant="contained"
+                color="primary"
+                component="span"
+                style={{ marginTop: "16px", display: "block" }}
+              >
+                Upload Image
+              </Button>
+            </label>
+            {imagePreview && (
+              <div style={{ marginTop: "16px" }}>
+                <img src={imagePreview} alt="Preview" height="100" />
+              </div>
+            )}
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              style={{ marginTop: "16px", display: "block" }}
+            >
+              Submit
+            </Button>
+          </form>
+        </ModalContent>
+      </Modal>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteOpen}
+        onClose={handleDeleteClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Delete Category"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete the category "
+            {selectedCategory?.name}"?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteClose} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={() => deleteMutation.mutate(selectedCategory._id)}
+            color="error"
+            autoFocus
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
