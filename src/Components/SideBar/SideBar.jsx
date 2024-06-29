@@ -18,7 +18,7 @@ export default function SideBar() {
               <li>
                 <NavLink to="/panel/profile">
                   <i className="fa-solid fa-landmark"></i>
-                  <span className="nav-text">Add Landmark</span>
+                  <span className="nav-text">Landmark</span>
                 </NavLink>
               </li>
               <li>

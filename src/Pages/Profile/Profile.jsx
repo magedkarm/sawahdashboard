@@ -90,7 +90,7 @@ const validationSchema = Yup.object({
     .required("Images are required."),
 });
 
-export default function Profile() {
+export default function AddLandMark() {
   const [show, setShow] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [images, setImages] = useState([]);
@@ -112,7 +112,7 @@ export default function Profile() {
     onSubmit: submitForm,
   });
 
-  const handleClose = () => setShow(false);
+  const handleCloseAdd = () => setShow(false);
   const handleShow = () => setShow(true);
 
   async function submitForm(values) {
@@ -183,7 +183,7 @@ export default function Profile() {
   const handleLocationSave = () => {
     if (selectedLocation) {
       formik.setFieldValue("location.coordinates", selectedLocation);
-      handleClose();
+      handleCloseAdd();
     }
   };
 
@@ -307,7 +307,7 @@ export default function Profile() {
                       Pick Location
                     </Button>
 
-                    <Modal show={show} onHide={handleClose}>
+                    <Modal show={show} onHide={handleCloseAdd}>
                       <Modal.Header closeButton>
                         <Modal.Title>Pick Location</Modal.Title>
                       </Modal.Header>
@@ -327,7 +327,7 @@ export default function Profile() {
                         </MapContainer>
                       </Modal.Body>
                       <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose}>
+                        <Button variant="secondary" onClick={handleCloseAdd}>
                           Close
                         </Button>
                         <Button variant="primary" onClick={handleLocationSave}>

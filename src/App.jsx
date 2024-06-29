@@ -13,6 +13,7 @@ import Admins from "./Pages/Admins/Admins";
 import Guides from "./Pages/Guides/Guides";
 import Category from "./Pages/Category/Category";
 import Landmarks from "./Pages/Landmarks/Landmarks";
+import LandmarkComponent from "./Pages/test/LandmarkComponent";
 
 const router = createBrowserRouter([
   { path: "/", element: <Login /> },
@@ -30,7 +31,7 @@ const router = createBrowserRouter([
       },
       {
         path: "profile",
-        element: <Profile />,
+        element: <Landmarks />,
       },
       {
         path: "users",
