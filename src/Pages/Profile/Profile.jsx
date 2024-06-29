@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
+import * as Yup from "yup";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
@@ -10,8 +11,12 @@ import {
   Select,
   TextField,
 } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
+import axios from "axios";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Fix for default icon issue with leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -38,19 +43,72 @@ function LocationMarker({ setSelectedLocation }) {
   return null;
 }
 
+// List of Egyptian Governorates
+const egyptianGovernorates = [
+  "Alexandria",
+  "Aswan",
+  "Asyut",
+  "Beheira",
+  "Beni Suef",
+  "Cairo",
+  "Dakahlia",
+  "Damietta",
+  "Faiyum",
+  "Gharbia",
+  "Giza",
+  "Ismailia",
+  "Kafr El Sheikh",
+  "Luxor",
+  "Matrouh",
+  "Minya",
+  "Monufia",
+  "New Valley",
+  "North Sinai",
+  "Port Said",
+  "Qalyubia",
+  "Qena",
+  "Red Sea",
+  "Sharqia",
+  "Sohag",
+  "South Sinai",
+  "Suez",
+];
+
+const validationSchema = Yup.object({
+  name: Yup.string().required("Name is required."),
+  category: Yup.string().required("Category is required."),
+  description: Yup.string().required("Description is required."),
+  location: Yup.object().shape({
+    governorate: Yup.string().required("Governorate is required."),
+    coordinates: Yup.array()
+      .of(Yup.number().required("Coordinates are required."))
+      .required("Coordinates are required."),
+  }),
+  images: Yup.array()
+    .min(1, "At least one image is required.")
+    .max(3, "You can upload up to 3 images only.")
+    .required("Images are required."),
+});
+
 export default function Profile() {
   const [show, setShow] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [images, setImages] = useState([]);
+  const [governorate, setGovernorate] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const formik = useFormik({
     initialValues: {
       name: "",
       category: "",
       description: "",
+      images: [],
       location: {
         coordinates: [],
+        governorate: "",
       },
     },
+    validationSchema,
     onSubmit: submitForm,
   });
 
@@ -58,11 +116,80 @@ export default function Profile() {
   const handleShow = () => setShow(true);
 
   async function submitForm(values) {
-    console.log(values);
+    setLoading(true);
+    try {
+      const formData = new FormData();
+
+      formData.append("name", values.name);
+      formData.append("category", values.category);
+      formData.append("description", values.description);
+      formData.append(
+        "location.coordinates[0]",
+        values.location.coordinates[0]
+      );
+      formData.append(
+        "location.coordinates[1]",
+        values.location.coordinates[1]
+      );
+      formData.append("location.governorate", values.location.governorate);
+
+      images.forEach((image) => {
+        formData.append("images", image);
+      });
+
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        "http://localhost:8000/api/v1/landmarks",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setLoading(false);
+      toast.success("Landmark added successfully!");
+    } catch (error) {
+      setLoading(false);
+      if (error.response) {
+        if (error.response.status === 400) {
+          toast.error("Bad Request. Please check the form data.");
+        } else if (error.response.status === 409) {
+          toast.error("Conflict. The landmark already exists.");
+        } else {
+          toast.error(`Error: ${error.response.status}`);
+        }
+      } else if (error.request) {
+        toast.error("No response from server. Please try again later.");
+      } else {
+        toast.error(`Error: ${error.message}`);
+      }
+    }
   }
+
+  const handleImagesChange = (e) => {
+    const files = Array.from(e.target.files).slice(0, 3);
+    setImages(files);
+    formik.setFieldValue("images", files);
+  };
+
+  const handleGovernorateChange = (_, value) => {
+    formik.setFieldValue("location.governorate", value);
+    setGovernorate(value);
+  };
+
+  const handleLocationSave = () => {
+    if (selectedLocation) {
+      formik.setFieldValue("location.coordinates", selectedLocation);
+      handleClose();
+    }
+  };
 
   return (
     <>
+      <ToastContainer />
       <div className="landmark">
         <div className="pageTitles">
           <h3>
@@ -86,7 +213,7 @@ export default function Profile() {
                 <div className="row gy-4">
                   <div className="col-md-6">
                     <TextField
-                      style={{ width: "100%" }}
+                      fullWidth
                       id="outlined-required-name"
                       name="name"
                       onBlur={formik.handleBlur}
@@ -94,10 +221,8 @@ export default function Profile() {
                       value={formik.values.name}
                       label="Name"
                       error={formik.touched.name && Boolean(formik.errors.name)}
+                      helperText={formik.touched.name && formik.errors.name}
                     />
-                    {formik.touched.name && formik.errors.name && (
-                      <div className="error">{formik.errors.name}</div>
-                    )}
                   </div>
                   <div className="col-md-6">
                     <FormControl fullWidth>
@@ -109,18 +234,31 @@ export default function Profile() {
                         id="select-category"
                         name="category"
                         value={formik.values.category}
-                        label="Select Category"
                         onChange={formik.handleChange}
+                        label="Select Category"
+                        error={
+                          formik.touched.category &&
+                          Boolean(formik.errors.category)
+                        }
                       >
-                        <MenuItem value={10}>Ten</MenuItem>
-                        <MenuItem value={20}>Twenty</MenuItem>
-                        <MenuItem value={30}>Thirty</MenuItem>
+                        <MenuItem value="60e0e817830ad6b51767a37f">
+                          Category 1
+                        </MenuItem>
+                        <MenuItem value="60e0e817830ad6b51767a380">
+                          Category 2
+                        </MenuItem>
+                        <MenuItem value="60e0e817830ad6b51767a381">
+                          Category 3
+                        </MenuItem>
                       </Select>
+                      {formik.touched.category && formik.errors.category && (
+                        <div className="error">{formik.errors.category}</div>
+                      )}
                     </FormControl>
                   </div>
                   <div className="col-12">
                     <TextField
-                      style={{ width: "100%" }}
+                      fullWidth
                       id="outlined-required-description"
                       name="description"
                       onBlur={formik.handleBlur}
@@ -133,11 +271,32 @@ export default function Profile() {
                         formik.touched.description &&
                         Boolean(formik.errors.description)
                       }
+                      helperText={
+                        formik.touched.description && formik.errors.description
+                      }
                     />
-                    {formik.touched.description &&
-                      formik.errors.description && (
-                        <div className="error">{formik.errors.description}</div>
+                  </div>
+                  <div className="col-md-6">
+                    <Autocomplete
+                      options={egyptianGovernorates}
+                      value={governorate}
+                      onChange={handleGovernorateChange}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Select Governorate"
+                          variant="outlined"
+                          error={
+                            formik.touched.location?.governorate &&
+                            Boolean(formik.errors.location?.governorate)
+                          }
+                          helperText={
+                            formik.touched.location?.governorate &&
+                            formik.errors.location?.governorate
+                          }
+                        />
                       )}
+                    />
                   </div>
                   <div className="col-md-6">
                     <Button
@@ -171,25 +330,71 @@ export default function Profile() {
                         <Button variant="secondary" onClick={handleClose}>
                           Close
                         </Button>
-                        <Button
-                          variant="primary"
-                          onClick={() => {
-                            formik.setFieldValue(
-                              "location.coordinates",
-                              selectedLocation
-                            );
-                            handleClose();
-                          }}
-                        >
+                        <Button variant="primary" onClick={handleLocationSave}>
                           Save Changes
                         </Button>
                       </Modal.Footer>
                     </Modal>
                   </div>
+                  <div className="col-md-6">
+                    <div className="form-group">
+                      <label htmlFor="images" className="form-label">
+                        Upload Images (up to 3):
+                      </label>
+                      <input
+                        type="file"
+                        id="images"
+                        name="images"
+                        accept="image/*"
+                        multiple
+                        onChange={handleImagesChange}
+                        className="form-control"
+                      />
+                      {formik.touched.images && formik.errors.images && (
+                        <div
+                          className="error"
+                          style={{ color: "red", marginTop: "10px" }}
+                        >
+                          {formik.errors.images}
+                        </div>
+                      )}
+                      <div
+                        className="uploaded-images"
+                        style={{ marginTop: "10px" }}
+                      >
+                        {images.map((image, index) => (
+                          <div
+                            key={index}
+                            style={{
+                              display: "inline-block",
+                              marginRight: "10px",
+                            }}
+                          >
+                            <img
+                              src={URL.createObjectURL(image)}
+                              alt={`Landmark ${index + 1}`}
+                              style={{
+                                maxWidth: "100px",
+                                maxHeight: "100px",
+                                borderRadius: "8px",
+                                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <button type="submit" className="btn btn-danger mt-4">
-                  Submit
-                </button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  style={{ marginTop: "16px", display: "block" }}
+                  disabled={loading}
+                >
+                  {loading ? "Submitting..." : "Submit"}
+                </Button>
               </form>
             </div>
           </div>

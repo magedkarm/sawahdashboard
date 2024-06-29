@@ -12,6 +12,7 @@ import { Toaster } from "react-hot-toast";
 import Admins from "./Pages/Admins/Admins";
 import Guides from "./Pages/Guides/Guides";
 import Category from "./Pages/Category/Category";
+import Landmarks from "./Pages/Landmarks/Landmarks";
 
 const router = createBrowserRouter([
   { path: "/", element: <Login /> },
