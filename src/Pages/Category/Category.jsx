@@ -194,9 +194,7 @@ export default function Category() {
         {}
       );
       setImageUpdatePreview(categoryDetails?.data.doc.imageCover);
-      setImagePreview(
-        `http://localhost:8000/img/categories/${categoryDetails?.data.doc.imageCover}`
-      );
+      setImagePreview(categoryDetails?.data.doc.imageCover);
     } catch (e) {
       console.log(e);
     }
@@ -272,7 +270,7 @@ export default function Category() {
                         <TableCell align="center">{row.name}</TableCell>
                         <TableCell align="center">
                           <img
-                            src={`http://localhost:8000/img/categories/${row.imageCover}`}
+                            src={row.imageCover}
                             className="rounded"
                             alt={row.name}
                             height="100"

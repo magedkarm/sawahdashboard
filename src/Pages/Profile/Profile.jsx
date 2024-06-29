@@ -1,3 +1,8 @@
+import React, { useState } from "react";
+import { useFormik } from "formik";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import {
   FormControl,
   InputLabel,
@@ -5,77 +10,54 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import { useFormik } from "formik";
-import React, { useContext, useEffect, useState } from "react";
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 
-import { styled, css } from "@mui/system";
-import {
-  GoogleMap,
-  LoadScript,
-  Marker,
-  useJsApiLoader,
-} from "@react-google-maps/api";
+// Fix for default icon issue with leaflet
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
+  iconUrl: require("leaflet/dist/images/marker-icon.png"),
+  shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
+});
 
 const containerStyle = {
   width: "100%",
   height: "400px",
 };
 
-const center = {
-  lat: -3.745,
-  lng: -38.523,
-};
-export default function Profile() {
-  const [selectedValue, setSelectedValue] = useState("");
-  const [show, setShow] = useState(false);
-  const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: "YOUR_API_KEY",
+const center = [30.0444, 31.2357]; // Coordinates for Cairo, Egypt
+
+function LocationMarker({ setSelectedLocation }) {
+  useMapEvents({
+    click(e) {
+      setSelectedLocation([e.latlng.lat, e.latlng.lng]);
+    },
   });
 
+  return null;
+}
+
+export default function Profile() {
+  const [show, setShow] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
 
-  //
-  //
-  //
-  let formik = useFormik({
+  const formik = useFormik({
     initialValues: {
       name: "",
       category: "",
       description: "",
-      // imageCover: "",
-      // images: [],
-      // location: {
-      //   coordinates: [],
-      //   governorate: "",
-      // },
+      location: {
+        coordinates: [],
+      },
     },
-
-    onSubmit: submitLogin,
+    onSubmit: submitForm,
   });
-  const handleMapClick = (event) => {
-    setSelectedLocation({
-      lat: event.latLng.lat(),
-      lng: event.latLng.lng(),
-    });
-  };
 
-  if (loadError) {
-    return <div>Error loading maps</div>;
-  }
-
-  if (!isLoaded) {
-    return <div>Loading...</div>;
-  }
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const handleChange = (event) => {
-    setSelectedValue(event.target.value);
-  };
 
-  async function submitLogin(values) {
-    console.log(selectedValue);
+  async function submitForm(values) {
     console.log(values);
   }
 
@@ -95,18 +77,17 @@ export default function Profile() {
       </div>
       <div className="row">
         <div className="col-12">
-          <div class="card">
-            <div class="card-header">
-              <h4 className="card-title ">Add Landmarks</h4>
+          <div className="card">
+            <div className="card-header">
+              <h4 className="card-title">Add Landmarks</h4>
             </div>
-            <div class="card-body">
+            <div className="card-body">
               <form className="formField" onSubmit={formik.handleSubmit}>
                 <div className="row gy-4">
                   <div className="col-md-6">
                     <TextField
                       style={{ width: "100%" }}
-                      className="formField"
-                      id="outlined-required name"
+                      id="outlined-required-name"
                       name="name"
                       onBlur={formik.handleBlur}
                       onChange={formik.handleChange}
@@ -120,15 +101,16 @@ export default function Profile() {
                   </div>
                   <div className="col-md-6">
                     <FormControl fullWidth>
-                      <InputLabel id="demo-simple-select-label">
+                      <InputLabel id="select-category-label">
                         Select Category
                       </InputLabel>
                       <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={selectedValue}
+                        labelId="select-category-label"
+                        id="select-category"
+                        name="category"
+                        value={formik.values.category}
                         label="Select Category"
-                        onChange={handleChange}
+                        onChange={formik.handleChange}
                       >
                         <MenuItem value={10}>Ten</MenuItem>
                         <MenuItem value={20}>Twenty</MenuItem>
@@ -139,13 +121,12 @@ export default function Profile() {
                   <div className="col-12">
                     <TextField
                       style={{ width: "100%" }}
-                      className="formField"
-                      id="outlined-required description"
+                      id="outlined-required-description"
                       name="description"
                       onBlur={formik.handleBlur}
                       onChange={formik.handleChange}
                       value={formik.values.description}
-                      label="description"
+                      label="Description"
                       multiline
                       rows={4}
                       error={
@@ -155,9 +136,7 @@ export default function Profile() {
                     />
                     {formik.touched.description &&
                       formik.errors.description && (
-                        <div classdescription="error">
-                          {formik.errors.description}
-                        </div>
+                        <div className="error">{formik.errors.description}</div>
                       )}
                   </div>
                   <div className="col-md-6">
@@ -171,56 +150,45 @@ export default function Profile() {
 
                     <Modal show={show} onHide={handleClose}>
                       <Modal.Header closeButton>
-                        <Modal.Title>Modal heading</Modal.Title>
+                        <Modal.Title>Pick Location</Modal.Title>
                       </Modal.Header>
                       <Modal.Body>
-                        {" "}
-                        <GoogleMap
-                          mapContainerStyle={containerStyle}
+                        <MapContainer
                           center={center}
-                          zoom={10}
-                          onClick={handleMapClick}
-                          options={{
-                            mapTypeControl: true,
-                            fullscreenControl: true,
-                          }}
+                          zoom={13}
+                          style={containerStyle}
                         >
+                          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                          <LocationMarker
+                            setSelectedLocation={setSelectedLocation}
+                          />
                           {selectedLocation && (
-                            <Marker position={selectedLocation} />
+                            <Marker position={selectedLocation}></Marker>
                           )}
-                        </GoogleMap>
+                        </MapContainer>
                       </Modal.Body>
                       <Modal.Footer>
                         <Button variant="secondary" onClick={handleClose}>
                           Close
                         </Button>
-                        <Button variant="primary" onClick={handleClose}>
+                        <Button
+                          variant="primary"
+                          onClick={() => {
+                            formik.setFieldValue(
+                              "location.coordinates",
+                              selectedLocation
+                            );
+                            handleClose();
+                          }}
+                        >
                           Save Changes
                         </Button>
                       </Modal.Footer>
                     </Modal>
                   </div>
-                  <div className="col-md-6">
-                    <FormControl fullWidth>
-                      <InputLabel id="demo-simple-select-label">
-                        Select Category
-                      </InputLabel>
-                      <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={selectedValue}
-                        label="Select Category"
-                        onChange={handleChange}
-                      >
-                        <MenuItem value={10}>Ten</MenuItem>
-                        <MenuItem value={20}>Twenty</MenuItem>
-                        <MenuItem value={30}>Thirty</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </div>
                 </div>
-                <button type="sumbit" className="btn btn-danger mt-4">
-                  sad
+                <button type="submit" className="btn btn-danger mt-4">
+                  Submit
                 </button>
               </form>
             </div>
