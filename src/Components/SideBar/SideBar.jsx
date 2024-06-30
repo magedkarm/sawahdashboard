@@ -16,9 +16,21 @@ export default function SideBar() {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/panel/profile">
+                <NavLink to="/panel/landmarks">
                   <i className="fa-solid fa-landmark"></i>
                   <span className="nav-text">Landmark</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/panel/category">
+                  <i className="fa-solid fa-layer-group"></i>
+                  <span className="nav-text">Category</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/panel/tours">
+                  <i className="fa-solid fa-sailboat"></i>
+                  <span className="nav-text">Tours</span>
                 </NavLink>
               </li>
               <li>
@@ -43,12 +55,6 @@ export default function SideBar() {
                 <NavLink to="/panel/guides">
                   <i className="fa-solid fa-hand"></i>
                   <span className="nav-text">Guides</span>
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/panel/category">
-                  <i className="fa-solid fa-layer-group"></i>
-                  <span className="nav-text">Category</span>
                 </NavLink>
               </li>
             </ul>

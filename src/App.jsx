@@ -14,6 +14,7 @@ import Guides from "./Pages/Guides/Guides";
 import Category from "./Pages/Category/Category";
 import Landmarks from "./Pages/Landmarks/Landmarks";
 import LandmarkComponent from "./Pages/test/LandmarkComponent";
+import Tours from "./Pages/Tours/Tours";
 
 const router = createBrowserRouter([
   { path: "/", element: <Login /> },
@@ -30,8 +31,12 @@ const router = createBrowserRouter([
         element: <DashBoard />,
       },
       {
-        path: "profile",
+        path: "landmarks",
         element: <Landmarks />,
+      },
+      {
+        path: "tours",
+        element: <Tours />,
       },
       {
         path: "users",

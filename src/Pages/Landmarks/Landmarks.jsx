@@ -162,10 +162,7 @@ export default function Category() {
     return response.data;
   };
 
-  const { data: categoryData, isLoading: isCategoryLoading } = useQuery(
-    "allCategories",
-    getAllCategories
-  );
+  const { data: categoryData } = useQuery("allCategories", getAllCategories);
 
   const deleteMutation = useMutation(
     (categoryId) =>
@@ -495,8 +492,8 @@ export default function Category() {
                           "&:last-child td, &:last-child th": { border: 0 },
                         }}
                       >
-                        <TableCell component="th" scope="row">
-                          {ind + 1}
+                        <TableCell component="th" scope="row" align="left">
+                          {page * rowsPerPage + ind + 1}
                         </TableCell>
                         <TableCell align="center">{row.name}</TableCell>
                         <TableCell align="center">
@@ -504,7 +501,7 @@ export default function Category() {
                             <img
                               key={index}
                               src={img}
-                              className=" p-1  rounded-4"
+                              className="p-1 rounded-4"
                               alt={row.name}
                               height="100"
                             />
