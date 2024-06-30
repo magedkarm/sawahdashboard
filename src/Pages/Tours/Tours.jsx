@@ -187,7 +187,7 @@ export default function Tours() {
 
   const deleteMutation = useMutation(
     (categoryId) =>
-      axios.delete(`api/v1/landmarks/${categoryId}`, {
+      axios.delete(`api/v1/tours/${categoryId}`, {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("token"),
         },
@@ -370,7 +370,6 @@ export default function Tours() {
       formData.append("maxGroupSize", newTour.maxGroupSize);
       formData.append("guide", newTour.guide);
       formData.append("duration", newTour.duration);
-      formData.append("startDays", newTour.startDays);
       formData.append("location[address]", newTour.location.address);
       formData.append(
         "location[coordinates][0]",
@@ -381,6 +380,12 @@ export default function Tours() {
         newTour.location.coordinates[1]
       );
       formData.append("location[type]", "Point");
+
+      // Append startDays as an array of strings
+      newTour.startDays.forEach((day, index) => {
+        formData.append(`startDays[${index}]`, day);
+      });
+
       newTour.images.forEach((image, index) => {
         formData.append("images", image);
         formData.append("imagesIndex", index);
