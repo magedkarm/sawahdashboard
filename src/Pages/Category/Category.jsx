@@ -25,6 +25,7 @@ import { Modal as BaseModal } from "@mui/base/Modal";
 import { useFormik } from "formik";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import LoadingComponent from "../../Components/LoadingComponent/LoadingComponent";
 
 export default function Category() {
   const [open, setOpen] = useState(false);
@@ -218,7 +219,12 @@ export default function Category() {
     ? data.data.docs.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
     : [];
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading)
+    return (
+      <>
+        <LoadingComponent />
+      </>
+    );
   if (error) return <div>An error occurred: {error.message}</div>;
 
   return (

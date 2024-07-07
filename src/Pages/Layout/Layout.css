@@ -149,6 +149,11 @@ content-body
   padding-top: 7.5rem;
 }
 
+.content-body-collapsed {
+  margin-left: 5rem;
+  transition: all 0.2s ease;
+}
+
 /* 
 footer
 

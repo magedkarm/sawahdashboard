@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../Layout/Layout.css";
 
 import { Dropdown, Collapse, initMDB } from "mdb-ui-kit";
@@ -11,13 +11,27 @@ import Footer from "../../Components/Footer/Footer";
 initMDB({ Dropdown, Collapse });
 
 export default function Layout() {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+  const handleToggleSidebar = (toggled) => {
+    setIsSidebarCollapsed(toggled);
+  };
+
+  useEffect(() => {
+    console.log(isSidebarCollapsed);
+  }, [isSidebarCollapsed]);
+
   return (
     <div className="layout">
-      <NavHeader />
+      <NavHeader onToggleSidebar={handleToggleSidebar} />
       <Header />
-      <SideBar />
-      <div className="content-body overflow-hidden">
-        <div className="container-fluid pt-4 px-4 overflow-hidden">
+      <SideBar isCollapsed={isSidebarCollapsed} />
+      <div
+        className={`content-body ${
+          isSidebarCollapsed ? "content-body-collapsed" : ""
+        }`}
+      >
+        <div className="container-fluid pt-4 px-4 overflow-hidden position-relative h-auto">
           <Outlet />
         </div>
       </div>

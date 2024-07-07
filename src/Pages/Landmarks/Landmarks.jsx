@@ -35,6 +35,7 @@ import L from "leaflet";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "leaflet/dist/leaflet.css";
+import LoadingComponent from "../../Components/LoadingComponent/LoadingComponent";
 
 // Fix for default icon issue with leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -108,7 +109,7 @@ const validationSchema = Yup.object({
     .required("Images are required."),
 });
 
-export default function Category() {
+export default function Landmarks() {
   const [open, setOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -230,54 +231,6 @@ export default function Category() {
       },
     }
   );
-
-  // const updateMutation = useMutation(
-  //   async ({ id, updatedCategory }) => {
-  //     const formData = new FormData();
-  //     formData.append("name", updatedCategory.name);
-  //     formData.append("category", updatedCategory.category);
-  //     formData.append("description", updatedCategory.description);
-  //     updatedCategory.images.forEach((image) => {
-  //       formData.append("images", image);
-  //     });
-  //     formData.append(
-  //       "location.coordinates[0]",
-  //       updatedCategory.location.coordinates[0]
-  //     );
-  //     formData.append(
-  //       "location.coordinates[1]",
-  //       updatedCategory.location.coordinates[1]
-  //     );
-  //     formData.append(
-  //       "location.governorate",
-  //       updatedCategory.location.governorate
-  //     );
-
-  //     const response = await axios.patch(`api/v1/landmarks/${id}`, formData, {
-  //       headers: {
-  //         Authorization: "Bearer " + localStorage.getItem("token"),
-  //         "Content-Type": "multipart/form-data",
-  //       },
-  //     });
-  //     return response.data;
-  //   },
-  //   {
-  //     onSuccess: (data) => {
-  //       console.log(data);
-  //       toast.success("Category updated successfully!", {
-  //         position: "top-center",
-  //       });
-  //       queryClient.invalidateQueries("allLandmarks");
-  //       handleUpdateClose();
-  //       setImageUpdatePreview(null);
-  //     },
-  //     onError: (error) => {
-  //       toast.error(`Error: ${error.response.data.message}`, {
-  //         position: "top-center",
-  //       });
-  //     },
-  //   }
-  // );
 
   const formik = useFormik({
     initialValues: {
@@ -425,7 +378,12 @@ export default function Category() {
     ? data.data.docs.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
     : [];
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading)
+    return (
+      <>
+        <LoadingComponent />
+      </>
+    );
   if (error) return <div>An error occurred: {error.message}</div>;
 
   const handleImagesChange = (e) => {

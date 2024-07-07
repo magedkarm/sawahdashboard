@@ -52,29 +52,7 @@ export default function Header() {
                     </li>
                   </ul>
                 </div>
-                {/* <MDBNavbarItem>
-                  <MDBDropdown>
-                    <MDBDropdownToggle
-                      tag="a"
-                      className="nav-link"
-                      role="button"
-                    >
-                      <i className="fas fa-bell  position-relative">
-                        <span className="badge-not badge rounded-pill badge-notification bg-danger">
-                          1
-                        </span>
-                      </i>
-                    </MDBDropdownToggle>
-                    <MDBDropdownMenu>
-                      <MDBDropdownItem link>Action</MDBDropdownItem>
-                      <MDBDropdownItem link>Another action</MDBDropdownItem>
-                      <MDBDropdownItem link>
-                        Something else here
-                      </MDBDropdownItem>
-                    </MDBDropdownMenu>
-                  </MDBDropdown>
-                </MDBNavbarItem> */}
-                {/* Avatar */}
+
                 <div className="dropdown">
                   <Link
                     data-mdb-dropdown-init

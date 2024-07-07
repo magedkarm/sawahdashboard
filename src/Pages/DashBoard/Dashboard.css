@@ -1,0 +1,53 @@
+.DashBoard {
+  padding: 20px;
+}
+
+.pageTitles {
+  margin-bottom: 20px;
+}
+
+.global-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: #eaeaea !important;
+}
+
+.inner-card {
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: #fff;
+}
+
+.card {
+  border: none;
+}
+
+.card-body {
+  text-align: center;
+  padding: 20px;
+}
+
+.card-title {
+  font-size: 1.2em;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.chart-container {
+  width: 100%;
+  height: 400px;
+}
+
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column;
+  }
+
+  .chart-container {
+    height: 300px;
+  }
+}

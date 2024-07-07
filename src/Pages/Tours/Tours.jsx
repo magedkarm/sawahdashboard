@@ -34,6 +34,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import LoadingComponent from "../../Components/LoadingComponent/LoadingComponent";
 
 // Fix for default icon issue with leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -90,27 +91,6 @@ const egyptianGovernorates = [
   "South Sinai",
   "Suez",
 ];
-
-const validationSchema = Yup.object({
-  name: Yup.string().required("Name is required."),
-  category: Yup.string().required("Category is required."),
-  description: Yup.string().required("Description is required."),
-  location: Yup.object().shape({
-    governorate: Yup.string().required("Governorate is required."),
-    coordinates: Yup.array()
-      .of(Yup.number().required("Coordinates are required."))
-      .required("Coordinates are required."),
-  }),
-  images: Yup.array()
-    .min(1, "At least one image is required.")
-    .max(3, "You can upload up to 3 images only.")
-    .required("Images are required."),
-  maxGroupSize: Yup.number().required("Max group size is required."),
-  duration: Yup.number().required("Duration is required."),
-  price: Yup.number().required("Price is required."),
-  startDays: Yup.array().min(1, "At least one start day is required."),
-  guide: Yup.string().required("Guide is required."),
-});
 
 export default function Tours() {
   const [open, setOpen] = useState(false);
@@ -426,7 +406,12 @@ export default function Tours() {
     ? data.data.docs.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
     : [];
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading)
+    return (
+      <>
+        <LoadingComponent />
+      </>
+    );
   if (error) return <div>An error occurred: {error.message}</div>;
 
   const handleCloseAdd = () => setShow(false);

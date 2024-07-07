@@ -2,22 +2,31 @@
   background-color: #fff;
   box-shadow: 0 0.9375rem 1.875rem 0 rgba(0, 0, 0, 0.02);
   height: calc(100% - 106px);
-  padding-bottom: 0;
-  padding-top: 0;
+  padding: 0;
   position: fixed;
   top: 7.5rem;
   transition: all 0.2s ease;
   width: 20.5rem;
   z-index: 6;
 }
-.sideBar .sideBarContaner {
+
+.sideBar.collapsed {
+  width: 5rem;
+}
+
+.sideBar .sideBarContainer {
   overflow: hidden;
-  overflow-anchor: none;
-  touch-action: auto;
   height: 100%;
   position: relative;
 }
-.sideBar .sideBarContaner .sideBarMenuUl {
+
+.sideBar .sideBarMenu {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.sideBar .sideBarMenuUl {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -25,35 +34,80 @@
   flex-direction: column;
   padding-top: 0.9375rem;
 }
-.sideBar .sideBarContaner .sideBarMenuUl li {
-  padding: 1.25rem;
+
+.sideBar .sideBarMenuUl li {
+  padding: 0.25rem 1.25rem;
+  position: relative;
+  transition: all 0.3s ease;
 }
-.sideBar .sideBarContaner .sideBarMenuUl li a {
+
+.sideBar .sideBarMenuUl li::before {
+  content: "";
+  background-color: #e23428;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 10px;
+  border-radius: 0 10px 10px 0;
+  transition: all 0.3s ease;
+  transform: translateX(-10px);
+}
+
+.sideBar .sideBarMenuUl li:hover::before,
+.sideBar .sideBarMenuUl li .active::before {
+  transform: translateX(0px);
+}
+
+.sideBar .sideBarMenuUl li a {
   text-decoration: none;
-  padding: 20px 32px;
+  padding: 1rem;
   color: #96a0af;
   font-size: 16px;
   font-weight: 500;
   transition: all 0.5s;
+  display: flex;
+  align-items: center;
+  position: relative;
 }
-.sideBar .sideBarContaner .sideBarMenuUl li .active {
+
+.sideBar .sideBarMenuUl li .active {
   color: #083f91;
 }
 
-.sideBar .sideBarContaner .sideBarMenuUl li a > i {
+.sideBar .sideBarMenuUl li a i {
   border-radius: 0.125rem;
   display: inline-block;
   font-size: 1.3rem;
-  height: auto;
-  line-height: 1;
   margin-right: 1.25rem;
-  position: relative;
   text-align: center;
-  top: 0;
-  vertical-align: middle;
-  width: auto;
 }
-.sideBar .sideBarContaner .sideBarMenuUl li:hover a > span {
+
+.sideBar .sideBarMenuUl li:hover a span {
   color: #e23428;
   transition: all 0.5s;
+}
+
+.sideBar.collapsed .sideBarMenuUl li a span {
+  display: none;
+}
+
+.sideBar.collapsed .sideBarMenuUl li a {
+  justify-content: center;
+}
+
+.sideBar.collapsed .sideBarMenuUl li:hover a span {
+  display: block;
+  position: absolute;
+  left: 5rem;
+  background-color: #fff;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 0.9375rem 1.875rem 0 rgba(0, 0, 0, 0.02);
+  z-index: 10;
+  white-space: nowrap;
+  border-radius: 0.125rem;
+}
+
+.sideBar.collapsed .sideBarMenuUl li a i {
+  margin-right: 0;
 }
