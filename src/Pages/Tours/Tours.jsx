@@ -206,7 +206,6 @@ export default function Tours() {
     enableReinitialize: true,
     // validationSchema: validationSchema,
     onSubmit: async (values) => {
-      //   console.log(values);
       setIsSubmitting(true);
       try {
         // First, update the details
@@ -259,7 +258,6 @@ export default function Tours() {
     },
     // validationSchema: validationSchema,
     onSubmit: async (values) => {
-      console.log(values);
       setIsSubmitting(true);
       try {
         await addTourMutation.mutateAsync(values);
@@ -284,7 +282,6 @@ export default function Tours() {
 
   const updateDetailsMutation = useMutation(
     async ({ id, updatedCategory }) => {
-      console.log(updatedCategory);
       const dataToSend = {
         name: updatedCategory.name,
         category: updatedCategory.category,
@@ -305,7 +302,6 @@ export default function Tours() {
     },
     {
       onSuccess: (response) => {
-        console.log("Response from updateDetailsMutation:", response.data);
         queryClient.invalidateQueries("allTours");
       },
       onError: (error) => {
@@ -341,7 +337,6 @@ export default function Tours() {
 
   const addTourMutation = useMutation(
     async (newTour) => {
-      console.log(newTour);
       const formData = new FormData();
       formData.append("name", newTour.name);
       formData.append("category", newTour.category);

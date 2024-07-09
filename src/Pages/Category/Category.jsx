@@ -196,9 +196,7 @@ export default function Category() {
       );
       setImageUpdatePreview(categoryDetails?.data.doc.imageCover);
       setImagePreview(categoryDetails?.data.doc.imageCover);
-    } catch (e) {
-      console.log(e);
-    }
+    } catch (e) {}
   }
 
   const handleChangePage = (event, newPage) => {
@@ -289,7 +287,6 @@ export default function Category() {
                             onClick={() => {
                               getcategotyDetails(row._id);
                               handleUpdateOpen(row);
-                              console.log(imagePreview);
                             }}
                             style={{ marginRight: "8px" }}
                           >

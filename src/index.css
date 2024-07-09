@@ -9,18 +9,36 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
 }
 
 :root {
   --main-color-p: #d4d4d4;
-  --main-color-label: #212529:
+  --main-color-label: #212529;
+  --primary-color: #eaeaea;
+  --secondary-color-1: #4b4e89;
+  --secondary-color-2: #141414;
+  --secondary-color-3: #242424;
+  --accent-color-1: #f2c14e;
+  --accent-color-2: #e27d60;
+  --accent-color-3: #85cdca;
+  --neutral-color-1: #f2c14e;
+  --neutral-color-2: #cccccc;
+  --neutral-color-3: #333333;
+  --background-color-1: #ffffff;
+  --background-color-2: #f7f7f7;
+  --background-color-3: #030419;
 }
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
-.css-8u39c-MuiTypography-root{font-family: "Poppins", sans-serif !important;}
-.css-10hburv-MuiTypography-root {font-family: "Poppins", sans-serif !important;}
+.css-8u39c-MuiTypography-root {
+  font-family: "Poppins", sans-serif !important;
+}
+.css-10hburv-MuiTypography-root {
+  font-family: "Poppins", sans-serif !important;
+}
 
 .toast-container {
   width: 100%;

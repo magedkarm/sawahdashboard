@@ -17,9 +17,7 @@ export default function Layout() {
     setIsSidebarCollapsed(toggled);
   };
 
-  useEffect(() => {
-    console.log(isSidebarCollapsed);
-  }, [isSidebarCollapsed]);
+  useEffect(() => {}, [isSidebarCollapsed]);
 
   return (
     <div className="layout">

@@ -23,7 +23,13 @@ import {
   Grid,
   Box,
   TableSortLabel,
+  TextField,
+  IconButton,
+  InputAdornment,
 } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Formik, Form, Field } from "formik";
+import * as Yup from "yup";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LoadingComponent from "../../Components/LoadingComponent/LoadingComponent";
@@ -32,9 +38,12 @@ export default function Users() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedRole, setSelectedRole] = useState(""); // State for selected role
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" }); // State for sorting
+  const [showPassword, setShowPassword] = useState(false); // State for password visibility
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State for confirm password visibility
   const queryClient = useQueryClient();
 
   const getAllUsers = async () => {
@@ -43,7 +52,7 @@ export default function Users() {
         Authorization: "Bearer " + localStorage.getItem("token"),
       },
     });
-    console.log("API Response Data:", response.data.data.docs);
+
     return response.data.data.docs;
   };
 
@@ -72,6 +81,29 @@ export default function Users() {
     }
   );
 
+  const addUserMutation = useMutation(
+    (newUser) =>
+      axios.post(`/api/v1/users`, newUser, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      }),
+    {
+      onSuccess: () => {
+        toast.success("User added successfully!", {
+          position: "top-center",
+        });
+        queryClient.invalidateQueries("allUsers");
+        handleAddClose();
+      },
+      onError: (error) => {
+        toast.error(`Error: ${error.response.data.message}`, {
+          position: "top-center",
+        });
+      },
+    }
+  );
+
   const handleDeleteOpen = (user) => {
     setSelectedUser(user);
     setDeleteOpen(true);
@@ -84,6 +116,14 @@ export default function Users() {
 
   const handleDeleteConfirm = () => {
     deleteUserMutation.mutate(selectedUser._id);
+  };
+
+  const handleAddOpen = () => {
+    setAddOpen(true);
+  };
+
+  const handleAddClose = () => {
+    setAddOpen(false);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -135,6 +175,18 @@ export default function Users() {
     page * rowsPerPage + rowsPerPage
   );
 
+  const validationSchema = Yup.object({
+    name: Yup.string().required("Name is required"),
+    email: Yup.string()
+      .email("Invalid email address")
+      .required("Email is required"),
+    role: Yup.string().required("Role is required"),
+    password: Yup.string().required("Password is required"),
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref("password"), null], "Passwords must match")
+      .required("Confirm Password is required"),
+  });
+
   if (isLoading)
     return (
       <>
@@ -163,7 +215,11 @@ export default function Users() {
           <div className="card">
             <div className="card-header">
               <h4 className="card-title">All Users</h4>
-              <Button variant="contained" color="primary">
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleAddOpen}
+              >
                 Add New User <i className="ps-3 fa-solid fa-plus"></i>
               </Button>
               <FormControl variant="outlined" style={{ minWidth: 200 }}>
@@ -261,8 +317,13 @@ export default function Users() {
                             height="100"
                           />
                         </TableCell>
-                        <TableCell align="center">
-                          {row.emailVerified ? "Yes" : "No"}
+                        <TableCell
+                          align="center"
+                          style={{
+                            color: row.emailVerified ? "green" : "red",
+                          }}
+                        >
+                          {row.emailVerified ? "Verified" : "Not Verified"}
                         </TableCell>
                         <TableCell align="center">
                           <Button
@@ -296,6 +357,158 @@ export default function Users() {
           </div>
         </div>
       </div>
+
+      {/* Add User Dialog */}
+      <Dialog open={addOpen} onClose={handleAddClose}>
+        <DialogTitle>Add New User</DialogTitle>
+        <DialogContent>
+          <Formik
+            initialValues={{
+              name: "",
+              email: "",
+              role: "",
+              password: "",
+              confirmPassword: "",
+            }}
+            validationSchema={validationSchema}
+            onSubmit={(values, { setSubmitting }) => {
+              const { confirmPassword, ...newUser } = values;
+              addUserMutation.mutate(newUser, {
+                onSuccess: () => {
+                  setSubmitting(false);
+                  handleAddClose();
+                },
+                onError: () => {
+                  setSubmitting(false);
+                },
+              });
+            }}
+          >
+            {({ errors, touched, isSubmitting }) => (
+              <Form>
+                <Box marginBottom={2}>
+                  <Field
+                    name="name"
+                    as={TextField}
+                    label="Name"
+                    fullWidth
+                    variant="outlined"
+                    error={touched.name && Boolean(errors.name)}
+                    helperText={touched.name && errors.name}
+                  />
+                </Box>
+                <Box marginBottom={2}>
+                  <Field
+                    name="email"
+                    as={TextField}
+                    label="Email"
+                    fullWidth
+                    variant="outlined"
+                    error={touched.email && Boolean(errors.email)}
+                    helperText={touched.email && errors.email}
+                  />
+                </Box>
+                <Box marginBottom={2}>
+                  <FormControl fullWidth variant="outlined">
+                    <InputLabel>Role</InputLabel>
+                    <Field
+                      name="role"
+                      as={Select}
+                      label="Role"
+                      error={touched.role && Boolean(errors.role)}
+                      helperText={touched.role && errors.role}
+                    >
+                      <MenuItem value="">
+                        <em>None</em>
+                      </MenuItem>
+                      <MenuItem value="admin">Admin</MenuItem>
+                      <MenuItem value="user">User</MenuItem>
+                      <MenuItem value="guide">Guide</MenuItem>
+                    </Field>
+                  </FormControl>
+                </Box>
+                <Box marginBottom={2}>
+                  <Field
+                    name="password"
+                    as={TextField}
+                    label="Password"
+                    fullWidth
+                    variant="outlined"
+                    type={showPassword ? "text" : "password"}
+                    error={touched.password && Boolean(errors.password)}
+                    helperText={touched.password && errors.password}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Box>
+                <Box marginBottom={2}>
+                  <Field
+                    name="confirmPassword"
+                    as={TextField}
+                    label="Confirm Password"
+                    fullWidth
+                    variant="outlined"
+                    type={showConfirmPassword ? "text" : "password"}
+                    error={
+                      touched.confirmPassword && Boolean(errors.confirmPassword)
+                    }
+                    helperText={
+                      touched.confirmPassword && errors.confirmPassword
+                    }
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle confirm password visibility"
+                            onClick={() =>
+                              setShowConfirmPassword(!showConfirmPassword)
+                            }
+                            edge="end"
+                          >
+                            {showConfirmPassword ? (
+                              <VisibilityOff />
+                            ) : (
+                              <Visibility />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Box>
+                <DialogActions>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="success"
+                    disabled={isSubmitting}
+                  >
+                    Add
+                  </Button>
+                  <Button
+                    onClick={handleAddClose}
+                    color="error"
+                    variant="contained"
+                  >
+                    Cancel
+                  </Button>
+                </DialogActions>
+              </Form>
+            )}
+          </Formik>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete Confirmation Dialog */}
       <Dialog

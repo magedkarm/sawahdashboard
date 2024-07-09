@@ -70,6 +70,10 @@
   align-items: center;
   position: relative;
 }
+.sideBar .sideBarMenuUl li a span {
+  font-size: 1.35rem;
+  font-weight: 600;
+}
 
 .sideBar .sideBarMenuUl li .active {
   color: #083f91;
@@ -78,7 +82,7 @@
 .sideBar .sideBarMenuUl li a i {
   border-radius: 0.125rem;
   display: inline-block;
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   margin-right: 1.25rem;
   text-align: center;
 }

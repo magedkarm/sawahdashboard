@@ -1,0 +1,129 @@
+/* profile.css */
+
+.profile-page {
+  position: relative;
+  background: var(--primary-color);
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: rgba(16, 30, 74, 0.83) 0px 3px 8px;
+  color: var(--background-color-1);
+}
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.profile-page .profile-photo,
+.dropzone.profile-photo,
+.profile-photo-preview {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 5px solid var(--accent-color-1);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--neutral-color-2);
+}
+
+.upload-icon {
+  font-size: 2rem;
+  color: var(--neutral-color-3);
+}
+
+.user-name,
+.user-email {
+  display: none;
+}
+
+.profile-header h2.user-name,
+.profile-header p.user-email {
+  display: block;
+}
+
+.edit-name-input {
+  font-size: 2rem;
+  color: var(--accent-color-1);
+  margin-bottom: 10px;
+  text-align: center;
+  border: none;
+  background: none;
+  border-bottom: 2px solid var(--accent-color-1);
+}
+
+.profile-header p {
+  font-size: 1.2rem;
+  color: var(--neutral-color-1);
+}
+
+.edit-button {
+  background-color: var(--accent-color-2);
+  color: var(--background-color-1);
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.profile-page .save-button,
+.profile-page .cancel-button {
+  color: var(--background-color-1);
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.profile-page .save-button:disabled,
+.profile-page .cancel-button:disabled {
+  background-color: var(--neutral-color-2);
+  cursor: not-allowed;
+}
+
+.profile-details {
+  width: 100%;
+}
+
+.profile-details h3 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: var(--accent-color-2);
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--secondary-color-3);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: rgba(16, 30, 74, 0.3) 0px 3px 8px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 500px;
+  padding: 15px;
+  border-bottom: 1px solid var(--neutral-color-2);
+}
+
+.info-label {
+  font-weight: bold;
+  color: var(--neutral-color-1);
+}
+
+.info-value {
+  color: var(--neutral-color-1);
+}

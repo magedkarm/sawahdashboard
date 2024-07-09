@@ -225,6 +225,7 @@ export default function Landmarks() {
         handleClose();
       },
       onError: (error) => {
+        setLoading(false);
         toast.error(`Error: ${error.response.data.message}`, {
           position: "top-center",
         });
@@ -245,7 +246,6 @@ export default function Landmarks() {
     },
     validationSchema,
     onSubmit: (values) => {
-      console.log(values); // Log form values to console
       mutation.mutate(values);
     },
   });
@@ -304,8 +304,6 @@ export default function Landmarks() {
         description: updatedCategory.description,
       };
 
-      // console.log("Sending details to the server:", dataToSend);
-
       return axios.patch(`api/v1/landmarks/${id}`, dataToSend, {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("token"),
@@ -315,7 +313,6 @@ export default function Landmarks() {
     },
     {
       onSuccess: () => {
-        console.log("Details mutation onSuccess");
         queryClient.invalidateQueries("allLandmarks");
       },
       onError: (error) => {
@@ -326,14 +323,11 @@ export default function Landmarks() {
 
   const updateImagesMutation = useMutation(
     async ({ id, images }) => {
-      console.log(images);
       const formData = new FormData();
       images.forEach((image, index) => {
         formData.append("images", image);
         formData.append("imagesIndex", index);
       });
-
-      console.log("Sending images to the server:", formData);
 
       return axios.patch(`api/v1/landmarks/${id}/images`, formData, {
         headers: {
@@ -344,7 +338,6 @@ export default function Landmarks() {
     },
     {
       onSuccess: () => {
-        console.log("Images mutation onSuccess");
         queryClient.invalidateQueries("allLandmarks");
       },
       onError: (error) => {

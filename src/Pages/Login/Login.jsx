@@ -33,7 +33,6 @@ export default function Login() {
           setErrorMsg("You Are Not Admin");
           setLoading(false);
         } else {
-          console.log(data.status);
           localStorage.setItem("token", data.token);
           setErrorMsg(null);
           authContext.setToken(data.token);

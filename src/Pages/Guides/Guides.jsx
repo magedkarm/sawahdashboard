@@ -34,7 +34,7 @@ export default function Guides() {
         Authorization: "Bearer " + localStorage.getItem("token"),
       },
     });
-    console.log("API Response Data:", response.data.data.docs);
+
     return response.data.data.docs.filter((user) => user.role === "guide");
   };
 
@@ -121,9 +121,6 @@ export default function Guides() {
           <div className="card">
             <div className="card-header">
               <h4 className="card-title">All Guides</h4>
-              <Button variant="contained" color="primary">
-                Add New Guide <i className="ps-3 fa-solid fa-plus"></i>
-              </Button>
             </div>
             <div className="card-body">
               <TableContainer component={Paper}>
@@ -163,16 +160,6 @@ export default function Guides() {
                           {row.emailVerified ? "Yes" : "No"}
                         </TableCell>
                         <TableCell align="center">
-                          <Button
-                            variant="contained"
-                            color="secondary"
-                            onClick={() => {
-                              // Add your update handler here
-                            }}
-                            style={{ marginRight: "8px" }}
-                          >
-                            Update
-                          </Button>
                           <Button
                             variant="contained"
                             color="error"

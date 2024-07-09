@@ -1,21 +1,26 @@
-import { createContext, useEffect, useState } from "react";
+import React, { createContext, useState, useEffect } from "react";
 
 export const AuthContext = createContext();
 
-export function AuthProvidor({ children }) {
-  const [token, setToken] = useState(null);
+export const AuthProvidor = ({ children }) => {
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
 
-  useEffect(
-    function () {
-      if (localStorage.getItem("token") !== null) {
-        setToken(localStorage.getItem("token"));
-      }
-    },
-    [token]
-  );
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
+    } else {
+      localStorage.removeItem("token");
+    }
+  }, [token]);
+
+  const logOut = () => {
+    setToken(null);
+    localStorage.removeItem("token");
+  };
+
   return (
-    <AuthContext.Provider value={{ token, setToken }}>
+    <AuthContext.Provider value={{ token, setToken, logOut }}>
       {children}
     </AuthContext.Provider>
   );
-}
+};

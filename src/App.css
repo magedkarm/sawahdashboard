@@ -7,3 +7,13 @@
   align-items: center;
   justify-content: center;
 }
+.card .MuiTableRow-head * {
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  font-family: "Poppins", sans-serif;
+}
+.card .MuiTableBody-root * {
+  font-size: 18px !important;
+  font-weight: 500 !important;
+  font-family: "Poppins", sans-serif;
+}
