@@ -28,6 +28,19 @@ body {
   --background-color-1: #ffffff;
   --background-color-2: #f7f7f7;
   --background-color-3: #030419;
+  --primary: #e23428;
+  --secondary: #135846;
+  --primary-hover: #bd241a;
+  --primary-dark: #64130d;
+  --rgba-primary-1: rgba(226, 52, 40, 0.1);
+  --rgba-primary-2: rgba(226, 52, 40, 0.2);
+  --rgba-primary-3: rgba(226, 52, 40, 0.3);
+  --rgba-primary-4: rgba(226, 52, 40, 0.4);
+  --rgba-primary-5: rgba(226, 52, 40, 0.5);
+  --rgba-primary-6: rgba(226, 52, 40, 0.6);
+  --rgba-primary-7: rgba(226, 52, 40, 0.7);
+  --rgba-primary-8: rgba(226, 52, 40, 0.8);
+  --rgba-primary-9: rgba(226, 52, 40, 0.9);
 }
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",

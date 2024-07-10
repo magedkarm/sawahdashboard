@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { UserContext } from "../../context/UserContext";
 import { useMessages } from "../../context/MessagesContext";
 import {
@@ -16,15 +16,33 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthContext } from "../../context/Auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function Header() {
   const { user } = useContext(UserContext) || {}; // Default to empty object if context is undefined
   const { token } = useContext(AuthContext); // Get the token from AuthContext
   const { messages, setMessages, isLoading, isError } = useMessages();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
   const navigate = useNavigate();
-  const unseenCount = messages.filter((message) => !message.seen).length;
+  const location = useLocation();
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatPathLabel = (path) => {
+    const segments = path
+      .split("/")
+      .filter((segment) => segment && segment !== "panel"); // Split and filter out empty segments and 'panel'
+    if (segments.length === 0) return "Dashboard"; // Default label
+
+    const lastSegment = segments[segments.length - 1];
+    return lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1);
+  };
+
+  const currentLabel = formatPathLabel(location.pathname);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -72,6 +90,7 @@ export default function Header() {
   };
 
   const renderMessagesDropdown = () => {
+    const unseenCount = messages.filter((message) => !message.seen).length;
     return (
       <>
         <IconButton
@@ -161,17 +180,31 @@ export default function Header() {
     );
   };
 
+  const formattedDate = currentTime.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
+  const formattedTime = currentTime.toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+
   return (
     <div className="header">
       <div className="header-content">
         <nav className="navbar navbar-expand-lg w-100">
           <div className="container-fluid">
-            <div className="header-left">dashboard</div>
-
+            <div className="header-left">{currentLabel}</div>
+            <div className="header-center d-flex align-items-center flex-column">
+              <div className="fa-2x fw-bold">{formattedDate}</div>
+              <div>{formattedTime}</div>
+            </div>
             <div className="header-right d-flex align-items-center">
               {/* Messages Dropdown */}
               {renderMessagesDropdown()}
-
               <IconButton color="inherit" onClick={handleAvatarClick}>
                 {renderUserAvatar()}
               </IconButton>

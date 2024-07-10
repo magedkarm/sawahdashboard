@@ -36,7 +36,6 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import LoadingComponent from "../../Components/LoadingComponent/LoadingComponent";
 
-// Fix for default icon issue with leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
@@ -49,7 +48,7 @@ const containerStyle = {
   height: "400px",
 };
 
-const center = [30.0444, 31.2357]; // Coordinates for Cairo, Egypt
+const center = [30.0444, 31.2357];
 
 function LocationMarker({ setSelectedLocation }) {
   useMapEvents({

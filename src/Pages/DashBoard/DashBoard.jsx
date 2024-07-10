@@ -1,34 +1,11 @@
 import React from "react";
 import { useQuery } from "react-query";
 import axios from "axios";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  BarElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-} from "chart.js";
-import { Line, Bar, Doughnut } from "react-chartjs-2";
+import ReactApexChart from "react-apexcharts";
 import "./Dashboard.css";
 import LoadingComponent from "../../Components/LoadingComponent/LoadingComponent";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  BarElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement
-);
-
+import { FaSackDollar } from "react-icons/fa6";
+import { FaLandmark, FaUser } from "react-icons/fa";
 const fetchStats = async () => {
   const { data } = await axios.get("/api/v1/stats/admin/", {
     headers: {
@@ -38,16 +15,11 @@ const fetchStats = async () => {
   return data.docs;
 };
 
-export default function DashBoard() {
+const DashBoard = () => {
   const { data, error, isLoading } = useQuery("stats", fetchStats);
 
-  if (isLoading)
-    return (
-      <>
-        <LoadingComponent />
-      </>
-    );
-  if (error) return <div>Error fetching data</div>;
+  if (isLoading) return <LoadingComponent />;
+  if (error) return <div>Error fetching data: {error.message}</div>;
 
   const {
     monthlySignUps,
@@ -57,13 +29,17 @@ export default function DashBoard() {
     topBookedTours,
   } = data;
 
+  const formatMonth = (month) => {
+    return new Date(0, month - 1).toLocaleString("default", { month: "short" });
+  };
+
   const formattedMonthlySignUps = monthlySignUps.map((item) => ({
-    month: `${item._id.year}-${item._id.month}`,
+    month: `${formatMonth(item._id.month)} ${item._id.year}`,
     numUsers: item.numUsers,
   }));
 
   const formattedMonthlyRevenue = monthlyRevenue.map((item) => ({
-    month: `${new Date().getFullYear()}-${item.month}`, // assuming current year if not provided
+    month: `${formatMonth(item.month)} ${new Date().getFullYear()}`,
     totalRevenue: item.totalRevenue,
   }));
 
@@ -72,7 +48,7 @@ export default function DashBoard() {
       ...formattedMonthlySignUps.map((item) => item.month),
       ...formattedMonthlyRevenue.map((item) => item.month),
     ])
-  );
+  ).sort((a, b) => new Date(a) - new Date(b));
 
   const signUpData = months.map((month) => {
     const signUp = formattedMonthlySignUps.find((item) => item.month === month);
@@ -100,41 +76,62 @@ export default function DashBoard() {
           </h3>
         </div>
       </div>
-      <div className="global-card card">
+      <div className="global-card card ">
         <div className="card-body">
           <div className="row mb-4">
             <div className="col-md-4 mb-3">
-              <div className="inner-card card">
+              <div className="inner-card card booking">
                 <div className="card-body">
-                  <h4 className="card-title">
-                    Total Revenue: $
-                    {monthlyRevenue.reduce(
-                      (acc, item) => acc + item.totalRevenue,
-                      0
-                    )}
-                  </h4>
+                  <div class="booking-status d-flex align-items-center">
+                    <span>
+                      <FaSackDollar />
+                    </span>
+                    <div class="ms-4">
+                      <h2 class="mb-0 font-w600">
+                        $
+                        {monthlyRevenue.reduce(
+                          (acc, item) => acc + item.totalRevenue,
+                          0
+                        )}
+                      </h2>
+                      <p class="mb-0 text-nowrap">Total Revenue</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
             <div className="col-md-4 mb-3">
-              <div className="inner-card card">
+              <div className="inner-card card booking">
                 <div className="card-body">
-                  <h4 className="card-title">
-                    Total Users:{" "}
-                    {monthlySignUps.reduce(
-                      (acc, item) => acc + item.numUsers,
-                      0
-                    )}
-                  </h4>
+                  <div class="booking-status d-flex align-items-center">
+                    <span>
+                      <FaUser />
+                    </span>
+                    <div class="ms-4">
+                      <h2 class="mb-0 font-w600">
+                        {monthlySignUps.reduce(
+                          (acc, item) => acc + item.numUsers,
+                          0
+                        )}
+                      </h2>
+                      <p class="mb-0 text-nowrap"> Total Users</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
             <div className="col-md-4 mb-3">
-              <div className="inner-card card">
+              <div className="inner-card card booking">
                 <div className="card-body">
-                  <h4 className="card-title">
-                    Popular Landmark: {popularLandmarks[0].name}
-                  </h4>
+                  <div class="booking-status d-flex align-items-center">
+                    <span>
+                      <FaLandmark />
+                    </span>
+                    <div class="ms-4">
+                      <h2 class="mb-0 font-w600">{popularLandmarks[0].name}</h2>
+                      <p class="mb-0 text-nowrap"> Popular Landmark</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -144,23 +141,28 @@ export default function DashBoard() {
               <div className="inner-card card">
                 <div className="card-body">
                   <h4 className="card-title">Monthly SignUps & Revenue</h4>
-                  <Line
-                    data={{
-                      labels: months,
-                      datasets: [
-                        {
-                          label: "Monthly SignUps",
-                          data: signUpData,
-                          borderColor: "rgba(75, 192, 192, 1)",
-                          backgroundColor: "rgba(75, 192, 192, 0.2)",
-                        },
-                        {
-                          label: "Monthly Revenue",
-                          data: revenueData,
-                          borderColor: "rgba(153, 102, 255, 1)",
-                          backgroundColor: "rgba(153, 102, 255, 0.2)",
-                        },
-                      ],
+                  <ReactApexChart
+                    type="line"
+                    series={[
+                      {
+                        name: "Monthly SignUps",
+                        data: signUpData,
+                      },
+                      {
+                        name: "Monthly Revenue",
+                        data: revenueData,
+                      },
+                    ]}
+                    options={{
+                      chart: {
+                        type: "line",
+                      },
+                      stroke: {
+                        curve: "smooth",
+                      },
+                      xaxis: {
+                        categories: months,
+                      },
                     }}
                   />
                 </div>
@@ -170,42 +172,19 @@ export default function DashBoard() {
               <div className="inner-card card">
                 <div className="card-body">
                   <h4 className="card-title">Popular Landmarks</h4>
-                  <Doughnut
-                    data={{
-                      labels: popularLandmarks.map((landmark) => landmark.name),
-                      datasets: [
-                        {
-                          label: "Number of Bookings",
-                          data: popularLandmarks.map(
-                            (landmark) => landmark.numBookings
-                          ),
-                          backgroundColor: [
-                            "rgba(255, 99, 132, 0.2)",
-                            "rgba(54, 162, 235, 0.2)",
-                            "rgba(255, 206, 86, 0.2)",
-                            "rgba(75, 192, 192, 0.2)",
-                            "rgba(153, 102, 255, 0.2)",
-                          ],
-                          borderColor: [
-                            "rgba(255, 99, 132, 1)",
-                            "rgba(54, 162, 235, 1)",
-                            "rgba(255, 206, 86, 1)",
-                            "rgba(75, 192, 192, 1)",
-                            "rgba(153, 102, 255, 1)",
-                          ],
-                          borderWidth: 1,
-                        },
-                      ],
-                    }}
+                  <ReactApexChart
+                    type="donut"
+                    series={popularLandmarks.map(
+                      (landmark) => landmark.numBookings
+                    )}
                     options={{
-                      plugins: {
-                        legend: {
-                          position: "top",
-                        },
-                        title: {
-                          display: true,
-                          text: "Popular Landmarks",
-                        },
+                      labels: popularLandmarks.map((landmark) => landmark.name),
+                      legend: {
+                        position: "top",
+                      },
+                      title: {
+                        text: "Popular Landmarks",
+                        align: "center",
                       },
                     }}
                   />
@@ -218,23 +197,24 @@ export default function DashBoard() {
               <div className="inner-card card">
                 <div className="card-body">
                   <h4 className="card-title">Top Guides</h4>
-                  <Bar
-                    data={{
-                      labels: topGuides.map((guide) => guide.name),
-                      datasets: [
-                        {
-                          label: "Rating",
-                          data: topGuides.map((guide) => guide.rating),
-                          backgroundColor: "rgba(255, 206, 86, 0.2)",
-                          borderColor: "rgba(255, 206, 86, 1)",
-                          borderWidth: 1,
-                        },
-                      ],
-                    }}
+                  <ReactApexChart
+                    type="bar"
+                    series={[
+                      {
+                        name: "Rating",
+                        data: topGuides.map((guide) => guide.rating),
+                      },
+                    ]}
                     options={{
-                      scales: {
-                        y: {
-                          beginAtZero: true,
+                      chart: {
+                        type: "bar",
+                      },
+                      xaxis: {
+                        categories: topGuides.map((guide) => guide.name),
+                      },
+                      plotOptions: {
+                        bar: {
+                          horizontal: false,
                         },
                       },
                     }}
@@ -246,23 +226,24 @@ export default function DashBoard() {
               <div className="inner-card card">
                 <div className="card-body">
                   <h4 className="card-title">Top Booked Tours</h4>
-                  <Bar
-                    data={{
-                      labels: topBookedTours.map((tour) => tour.name),
-                      datasets: [
-                        {
-                          label: "Booking Count",
-                          data: topBookedTours.map((tour) => tour.bookingCount),
-                          backgroundColor: "rgba(75, 192, 192, 0.2)",
-                          borderColor: "rgba(75, 192, 192, 1)",
-                          borderWidth: 1,
-                        },
-                      ],
-                    }}
+                  <ReactApexChart
+                    type="bar"
+                    series={[
+                      {
+                        name: "Booking Count",
+                        data: topBookedTours.map((tour) => tour.bookingCount),
+                      },
+                    ]}
                     options={{
-                      scales: {
-                        y: {
-                          beginAtZero: true,
+                      chart: {
+                        type: "bar",
+                      },
+                      xaxis: {
+                        categories: topBookedTours.map((tour) => tour.name),
+                      },
+                      plotOptions: {
+                        bar: {
+                          horizontal: false,
                         },
                       },
                     }}
@@ -275,4 +256,6 @@ export default function DashBoard() {
       </div>
     </>
   );
-}
+};
+
+export default DashBoard;

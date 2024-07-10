@@ -2,7 +2,7 @@ import React from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import "./App.css";
 import Login from "./Pages/Login/Login";
-import { AuthProvidor } from "./context/Auth"; // Corrected AuthProvider spelling
+import { AuthProvider } from "./context/Auth"; // Corrected AuthProvider spelling
 import ProtectedRoute from "./Pages/ProtectedRoute/ProtectedRoute";
 import DashBoard from "./Pages/DashBoard/DashBoard";
 import Layout from "./Pages/Layout/Layout";
@@ -19,6 +19,7 @@ import Tours from "./Pages/Tours/Tours";
 import { UserProvider } from "./context/UserContext";
 import { MessagesProvider } from "./context/MessagesContext";
 import MainProfile from "./Pages/Profile/MainProfile";
+import PageNotFound from "./Pages/PageNotFound/PageNotFound ";
 
 const router = createBrowserRouter([
   { path: "/", element: <Login /> },
@@ -66,6 +67,7 @@ const router = createBrowserRouter([
         path: "profile",
         element: <MainProfile />,
       },
+      { path: "*", element: <PageNotFound /> },
     ],
   },
 ]);
@@ -76,18 +78,16 @@ function App() {
   return (
     <div className="App">
       <QueryClientProvider client={clientQuery}>
-        <AuthProvidor>
-          {" "}
-          {/* Corrected component name */}
+        <AuthProvider>
           <UserProvider>
             <MessagesProvider>
               <RouterProvider router={router} />
             </MessagesProvider>
           </UserProvider>
-        </AuthProvidor>
+        </AuthProvider>
       </QueryClientProvider>
       <Toaster />
-      <ToastContainer /> {/* Added ToastContainer here */}
+      <ToastContainer />
     </div>
   );
 }

@@ -51,3 +51,47 @@
     height: 300px;
   }
 }
+:root {
+  --primary: #e23428;
+  --secondary: #135846;
+  --primary-hover: #bd241a;
+  --primary-dark: #64130d;
+  --rgba-primary-1: rgba(226, 52, 40, 0.1);
+  --rgba-primary-2: rgba(226, 52, 40, 0.2);
+  --rgba-primary-3: rgba(226, 52, 40, 0.3);
+  --rgba-primary-4: rgba(226, 52, 40, 0.4);
+  --rgba-primary-5: rgba(226, 52, 40, 0.5);
+  --rgba-primary-6: rgba(226, 52, 40, 0.6);
+  --rgba-primary-7: rgba(226, 52, 40, 0.7);
+  --rgba-primary-8: rgba(226, 52, 40, 0.8);
+  --rgba-primary-9: rgba(226, 52, 40, 0.9);
+}
+
+.booking .booking-status span {
+  height: 4.063rem;
+  width: 4.063rem;
+  border-radius: 0.5rem;
+  background: var(--rgba-primary-1);
+  text-align: center;
+  line-height: 4.063rem;
+}
+
+.booking:hover {
+  box-shadow: 0 1.188rem 1.188rem rgba(0, 0, 0, 0.16) !important;
+}
+
+.booking:hover .booking-status span {
+  background: var(--primary);
+  transition: all 0.5s ease-in-out;
+}
+
+.booking .booking-status span svg {
+  font-size: 28px;
+}
+.booking .booking-status span svg path {
+  fill: var(--primary);
+  transition: all 0.5s ease-in-out;
+}
+.booking:hover .booking-status span svg path {
+  fill: white;
+}

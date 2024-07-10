@@ -11,7 +11,7 @@
 
 .sidebar-button {
   background: none;
-  color: var(--neutral-color-1);
+  color: var(--primary-dark);
   border: none;
   padding: 15px;
   margin: 10px 0;
@@ -25,14 +25,14 @@
 }
 
 .sidebar-button:hover {
-  background-color: var(--secondary-color-2);
-  color: var(--neutral-color-1);
+  background-color: var(--primary);
+  color: var(--background-color-1);
   padding-left: 50px;
 }
 
 .sidebar-button.active {
-  background-color: var(--secondary-color-2);
-  color: var(--neutral-color-1);
+  background-color: var(--primary);
+  color: var(--background-color-1);
 }
 
 .sidebarProfile .icon {
